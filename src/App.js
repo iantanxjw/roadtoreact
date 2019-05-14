@@ -1,19 +1,17 @@
-import React, { Component } from 'react'; 
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
-import { isTemplateElement, tsConstructorType } from '@babel/types';
 
 const list = [
   {
     title: 'React',
-    url: 'https://reactjs.org',
+    url: 'https://reactjs.org/',
     author: 'Jordan Walke',
-    num_comments: '3',
+    num_comments: 3,
     points: 4,
     objectID: 0,
   },
   {
-    tite: 'Redux',
+    title: 'Redux',
     url: 'https://redux.js.org/',
     author: 'Dan Abramov, Andrew Clark',
     num_comments: 2,
@@ -21,6 +19,9 @@ const list = [
     objectID: 1,
   },
 ];
+
+const isSearched = searchTerm => item =>
+  item.title.toLowerCase().includes(searchTerm.toLowerCase());
 
 class App extends Component {
   constructor(props) {
@@ -30,8 +31,13 @@ class App extends Component {
       list,
       searchTerm: '',
     };
-    this.onDismiss = this.onDismiss.bind(this)
-    this.onSearchChange = this.onSearchChange.bind(this)
+
+    this.onSearchChange = this.onSearchChange.bind(this);
+    this.onDismiss = this.onDismiss.bind(this);
+  }
+
+  onSearchChange(event) {
+    this.setState({ searchTerm: event.target.value });
   }
 
   onDismiss(id) {
@@ -40,25 +46,16 @@ class App extends Component {
     this.setState({ list: updatedList });
   }
 
-  onSearchChange() {
-    this.setState({ searchTerm: event.target.value });
-  }
-
   render() {
     return (
       <div className="App">
-      <form>
-        <input 
-        type="text"
-        onChange={this.onSearchChange}
-        />
-      </form>
-
-        {this.state.list.map(item => {
-          const onHandleDismiss = () =>
-            this.onDismiss(item.objectID);
-        
-          return(
+        <form>
+          <input
+            type="text"
+            onChange={this.onSearchChange}
+          />
+        </form>
+        {this.state.list.filter(isSearched(this.state.searchTerm)).map(item =>
           <div key={item.objectID}>
             <span>
               <a href={item.url}>{item.title}</a>
@@ -70,15 +67,13 @@ class App extends Component {
               <button
                 onClick={() => this.onDismiss(item.objectID)}
                 type="button"
-                >
-                  Dismiss
+              >
+                Dismiss
               </button>
             </span>
-          </div> 
-        );
-      }
-    )}
-    </div> 
+          </div>
+        )}
+      </div>
     );
   }
 }
